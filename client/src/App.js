@@ -24,6 +24,8 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
 import TablePaginationActions from "./Components/TablePaginationActions";
+import _ from "lodash";
+import dayjs from "dayjs";
 
 function App() {
   const theme = createTheme({
@@ -66,14 +68,12 @@ function App() {
     setPage(0);
   };
 
-  
-
   useEffect(() => {
     axios
       .get("/fundranking", { params: { timerange: timeRange } })
       .then((response) => {
-        setData(response.data.data);
-        console.log(response.data);
+        const sorted = _.sortBy(response.data.data, "nav_return");
+        setData(sorted);
       })
       .catch((error) => {
         setData(null);
@@ -145,7 +145,7 @@ function App() {
               >
                 <TableHead>
                   <TableRow>
-                    <TableCell>Name</TableCell>
+                    <TableCell style={{ width: 250 }}>Name</TableCell>
                     <TableCell align="right">Rank of fund</TableCell>
                     <TableCell align="right">Updated Date</TableCell>
                     <TableCell align="right">Performance</TableCell>
@@ -159,13 +159,15 @@ function App() {
                         page * rowsPerPage + rowsPerPage
                       )
                     : data
-                  ).map((row) => (
+                  ).map((row, index) => (
                     <TableRow key={row.mstar_id}>
                       <TableCell component="th" scope="row">
                         {row.thailand_fund_code}
                       </TableCell>
-                      <TableCell align="right">{row.nav_return}</TableCell>
-                      <TableCell align="right">{row.nav_date}</TableCell>
+                      <TableCell align="right">{index + 1}</TableCell>
+                      <TableCell align="right">
+                        {dayjs(row.nav_date).format("DD/MM/YYYY")}
+                      </TableCell>
                       <TableCell align="right">{row.nav_return}</TableCell>
                       <TableCell align="right">{row.nav}</TableCell>
                     </TableRow>

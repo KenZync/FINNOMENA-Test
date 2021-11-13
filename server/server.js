@@ -15,6 +15,21 @@ app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
 });
 
+app.get("/fundranking", (req, res) => {
+  axios
+    .get(
+      "https://storage.googleapis.com/finno-ex-re-v2-static-staging/recruitment-test/fund-ranking-" +
+        req.query.timelength +
+        ".json"
+    )
+    .then((response) => {
+      res.json(response.data);
+    })
+    .catch((error) => {
+      res.json({ status: false });
+    });
+});
+
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));

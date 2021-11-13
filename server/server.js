@@ -19,7 +19,7 @@ app.get("/fundranking", (req, res) => {
   axios
     .get(
       "https://storage.googleapis.com/finno-ex-re-v2-static-staging/recruitment-test/fund-ranking-" +
-        req.query.timelength +
+        req.query.timerange +
         ".json"
     )
     .then((response) => {

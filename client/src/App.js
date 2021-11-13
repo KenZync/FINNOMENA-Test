@@ -1,28 +1,16 @@
 import {
   Camera,
   FirstPage,
-  FormatAlignCenter,
-  FormatAlignLeft,
-  FormatAlignRight,
   KeyboardArrowLeft,
   KeyboardArrowRight,
-  Laptop,
   LastPage,
-  PhoneAndroid,
-  Tv,
 } from "@mui/icons-material";
 import {
   AppBar,
   Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
   Container,
   createTheme,
   CssBaseline,
-  Grid,
   IconButton,
   Paper,
   Stack,
@@ -45,6 +33,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import "./App.css";
+import axios from "axios";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -115,26 +104,6 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-function createData(name, calories, fat) {
-  return { name, calories, fat };
-}
-
-const rows = [
-  createData("Cupcake", 305, 3.7),
-  createData("Donut", 452, 25.0),
-  createData("Eclair", 262, 16.0),
-  createData("Frozen yoghurt", 159, 6.0),
-  createData("Gingerbread", 356, 16.0),
-  createData("Honeycomb", 408, 3.2),
-  createData("Ice cream sandwich", 237, 9.0),
-  createData("Jelly Bean", 375, 0.0),
-  createData("KitKat", 518, 26.0),
-  createData("Lollipop", 392, 0.2),
-  createData("Marshmallow", 318, 0),
-  createData("Nougat", 360, 19.0),
-  createData("Oreo", 437, 18.0),
-].sort((a, b) => (a.calories < b.calories ? -1 : 1));
-
 function App() {
   const theme = createTheme({
     palette: {
@@ -165,7 +134,7 @@ function App() {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -176,11 +145,23 @@ function App() {
     setPage(0);
   };
 
+  // useEffect(() => {
+  //   fetch("/api")
+  //     .then((res) => res.json())
+  //     .then((data) => setData(data.message));
+  // }, []);
+
   useEffect(() => {
-    fetch("/api")
-      .then((res) => res.json())
-      .then((data) => setData(data.message));
-  }, []);
+    axios
+      .get("/fundranking", { params: { timerange: timeRange } })
+      .then((response) => {
+        setData(response.data.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        setData(null);
+      });
+  }, [timeRange]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -239,70 +220,81 @@ function App() {
               </ToggleButtonGroup>
             </Stack>
           </Paper>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell align="right">Rank of fund</TableCell>
-                  <TableCell align="right">Updated Date</TableCell>
-                  <TableCell align="right">Performance</TableCell>
-                  <TableCell align="right">Price</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(rowsPerPage > 0
-                  ? rows.slice(
-                      page * rowsPerPage,
-                      page * rowsPerPage + rowsPerPage
-                    )
-                  : rows
-                ).map((row) => (
-                  <TableRow key={row.name}>
-                    <TableCell component="th" scope="row">
-                      {row.name}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="right">
-                      {row.calories}
-                    </TableCell>
-                    <TableCell style={{ width: 160 }} align="right">
-                      {row.fat}
-                    </TableCell>
+          {data ? (
+            <TableContainer component={Paper}>
+              <Table
+                sx={{ minWidth: 500 }}
+                aria-label="custom pagination table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell align="right">Rank of fund</TableCell>
+                    <TableCell align="right">Updated Date</TableCell>
+                    <TableCell align="right">Performance</TableCell>
+                    <TableCell align="right">Price</TableCell>
                   </TableRow>
-                ))}
+                </TableHead>
+                <TableBody>
+                  {(rowsPerPage > 0
+                    ? data.slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                    : data
+                  ).map((row) => (
+                    <TableRow key={row.mstar_id}>
+                      <TableCell component="th" scope="row">
+                        {row.thailand_fund_code}
+                      </TableCell>
+                      <TableCell style={{ width: 160 }} align="right">
+                        {row.nav_return}
+                      </TableCell>
+                      <TableCell style={{ width: 160 }} align="right">
+                        {row.nav_date}
+                      </TableCell>
+                      <TableCell style={{ width: 160 }} align="right">
+                        {row.nav_return}
+                      </TableCell>
+                      <TableCell style={{ width: 160 }} align="right">
+                        {row.nav}
+                      </TableCell>
+                    </TableRow>
+                  ))}
 
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={6} />
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TablePagination
+                      rowsPerPageOptions={[
+                        5,
+                        10,
+                        25,
+                        { label: "All", value: -1 },
+                      ]}
+                      colSpan={3}
+                      count={data.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      SelectProps={{
+                        inputProps: {
+                          "aria-label": "rows per page",
+                        },
+                      }}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                      ActionsComponent={TablePaginationActions}
+                    />
                   </TableRow>
-                )}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[
-                      5,
-                      10,
-                      25,
-                      { label: "All", value: -1 },
-                    ]}
-                    colSpan={3}
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    SelectProps={{
-                      inputProps: {
-                        "aria-label": "rows per page",
-                      },
-                    }}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </TableContainer>
+                </TableFooter>
+              </Table>
+            </TableContainer>
+          ) : null}
         </Container>
       </main>
       {/* Footer */}

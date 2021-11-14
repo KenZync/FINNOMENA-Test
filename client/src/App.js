@@ -1,6 +1,4 @@
-import { Camera } from "@mui/icons-material";
 import {
-  AppBar,
   Container,
   createTheme,
   CssBaseline,
@@ -17,7 +15,6 @@ import {
   ThemeProvider,
   ToggleButton,
   ToggleButtonGroup,
-  Toolbar,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -26,6 +23,7 @@ import axios from "axios";
 import TablePaginationActions from "./Components/TablePaginationActions";
 import _ from "lodash";
 import dayjs from "dayjs";
+import Header from "./Components/Header";
 
 function App() {
   const theme = createTheme({
@@ -83,14 +81,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppBar position="relative">
-        <Toolbar>
-          <Camera sx={{ mr: 2 }} />
-          <Typography variant="h6" color="inherit" noWrap>
-            FINNOMENA
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Header />
       <main>
         <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 4 }}>
           <Typography

@@ -69,11 +69,7 @@ function App() {
     axios
       .get("/fundranking", { params: { timerange: timeRange } })
       .then((response) => {
-        const sorted = response.data.map((item, index) => {
-          item.rank = index + 1;
-          return item;
-        });
-        setData(sorted);
+        setData(response.data);
       })
       .catch((error) => {
         setData(null);

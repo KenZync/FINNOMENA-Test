@@ -23,7 +23,11 @@ app.get("/fundranking", (req, res) => {
         ".json"
     )
     .then((response) => {
-      res.json(response.data.data);
+      const sorted = response.data.data.map((item, index) => {
+        item.rank = index + 1;
+        return item;
+      });
+      res.json(sorted);
     })
     .catch((error) => {
       res.json({ status: false });

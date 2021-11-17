@@ -159,7 +159,7 @@ function App() {
                       </TableCell>
                       <TableCell align="right">{row.rank}</TableCell>
                       <TableCell align="right">
-                        {dayjs(row.nav_date).format("DD MMMM YYYY")}
+                        {dayjs(row.nav_date).format("D MMMM YYYY")}
                       </TableCell>
                       <TableCell align="right">{row.nav_return}</TableCell>
                       <TableCell align="right">{row.nav}</TableCell>

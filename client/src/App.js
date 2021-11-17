@@ -70,7 +70,13 @@ function App() {
     axios
       .get("/fundranking", { params: { timerange: timeRange } })
       .then((response) => {
-        const sorted = _.sortBy(response.data.data, "nav_return");
+        const sorted = response.data.data
+          .sort((a, b) => b - a)
+          .map((item, index) => {
+            item.rank = index + 1;
+            return item;
+          });
+        // const sorted = _.sortBy(response.data.data, "nav_return").reverse();
         setData(sorted);
       })
       .catch((error) => {
@@ -155,7 +161,7 @@ function App() {
                       <TableCell component="th" scope="row">
                         {row.thailand_fund_code}
                       </TableCell>
-                      <TableCell align="right">{index + 1}</TableCell>
+                      <TableCell align="right">{row.rank}</TableCell>
                       <TableCell align="right">
                         {dayjs(row.nav_date).format("DD MMMM YYYY")}
                       </TableCell>

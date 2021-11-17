@@ -23,7 +23,7 @@ app.get("/fundranking", (req, res) => {
         ".json"
     )
     .then((response) => {
-      res.json(response.data);
+      res.json(response.data.data);
     })
     .catch((error) => {
       res.json({ status: false });

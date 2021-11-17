@@ -21,7 +21,6 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
 import TablePaginationActions from "./Components/TablePaginationActions";
-import _ from "lodash";
 import dayjs from "dayjs";
 import Header from "./Components/Header";
 
@@ -70,13 +69,10 @@ function App() {
     axios
       .get("/fundranking", { params: { timerange: timeRange } })
       .then((response) => {
-        const sorted = response.data.data
-          .sort((a, b) => b - a)
-          .map((item, index) => {
-            item.rank = index + 1;
-            return item;
-          });
-        // const sorted = _.sortBy(response.data.data, "nav_return").reverse();
+        const sorted = response.data.map((item, index) => {
+          item.rank = index + 1;
+          return item;
+        });
         setData(sorted);
       })
       .catch((error) => {
